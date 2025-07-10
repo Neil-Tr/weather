@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-do List</title>
+</head>
+<body>
+    <header>
+        <h1>To-do List</h1>
+    </header>
+
+    <div class="main">
+
+        <div class="panel">
+            <div class="panel-header">Projects</div>
+            <div id="project-container"></div>
+            <button id="add-project">Add Project</button>
+        </div>
+
+
+        <div class="content">
+            <div class="items">Items</div>
+            <div id="items-container"></div>
+            <button id="add-item">Add Item</button>
+        </div>
+
+        <form id="project-form" class="popup-form" style="display: none">
+                <h3>Add Project</h3>
+                <label for="project-name">Project Name</label>
+                <input type="text" id="project-name" placeholder="Project Name" required>
+                <label for="project-desc">Project Description</label>
+                <textarea id="project-desc" placeholder="Description" rows="6" cols="50"></textarea>
+                <label for="project-date">Due Date</label>                
+                <input id="project-date" type="date">
+                <div class="button-container">
+                <button type="submit" id="project-submit">Submit</button>
+                <button type="button" id="project-close">Close</button>
+                </div>
+        </form>
+
+        <form id="item-form" class="popup-form" style="display: none">
+                <h3>Add Item</h3>
+                <label for="item-name">Name</label>
+                <input type="text" id="item-name" placeholder="To-do Name" required>
+                <label for="item-desc">Description</label>
+                <textarea id="item-desc" placeholder="Description" rows="6" cols="50"></textarea>
+                <label for="item-date">Due Date</label>                
+                <input id="item-date" type="date">
+                <div class="button-container">
+                <button type="submit" id="item-submit">Submit</button>
+                <button type="button" id="item-close">Close</button>
+                </div>
+        </form>
+
+    </div>
+
+
+    <footer>
+        <h4 id ="footer">Quote of the day</h4>
+        <!-- <p>“Friday: The day I celebrate surviving the week—mostly by doing as little as possible.”</p> -->
+    </footer>
+</body>
+</html>

@@ -1,0 +1,328 @@
+@import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Delius+Swash+Caps&display=swap');
+
+body {
+    background-color: rgb(223, 228, 160);
+    font-family: "Delius Swash Caps", cursive;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    min-height: 100vh;
+    margin: 0;
+    font-size: 1rem;
+}
+
+header {
+    background-color:rgb(250, 255, 175);
+    padding: 10px;
+    font-family: 'Pacifico', cursive;
+    font-size: 1rem;
+    border-bottom: 2px solid rgb(202, 190, 25);
+}
+
+.panel {
+    background-color:rgb(174, 202, 206);
+    padding: 10px;
+    border-right: 2px solid rgb(148, 186, 218);
+    position: relative;
+}
+.panel-header {
+    font-weight: 600;
+    border-bottom: 1px solid rgb(129, 124, 179);
+}
+#add-project {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    margin: 10px;
+    background-color: rgb(69, 115, 122);
+    padding: 8px 12px; 
+    border: 2px solid rgb(148, 186, 218);
+    border-radius: 5px; 
+    font-family: inherit;
+    color: #ffffff; 
+    cursor: pointer;
+}
+
+#add-item {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    margin: 10px;
+    background-color: rgb(175, 116, 43);;
+    padding: 8px 12px; 
+    border: 2px solid rgb(139, 107, 66);;
+    border-radius: 5px; 
+    font-family: inherit;
+    color: #ffffff; 
+    cursor: pointer;
+}
+
+.items {
+    font-weight: 600;
+    border-bottom: 1px solid rgb(129, 124, 179);
+}
+
+.content {
+    background-color:bisque;;
+    padding: 10px;
+    position: relative;
+}
+
+.main {
+    display: grid;
+    grid-template-columns: 1fr 5fr;
+    flex: 1;
+}
+
+footer {
+background-color:rgb(250, 255, 175);
+display: block;
+min-height: 10vh;
+padding: 5px 10px;
+border-top: 3px solid rgb(202, 190, 25);
+}
+footer>h4 {
+    line-height: 0.8;
+    margin: 5px;
+}
+footer p {
+    font-style:italic;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+
+.popup-form {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  max-width: 500px;
+  max-height: 700px;
+  margin: auto;
+  background: rgba(255, 255, 255, 0.8);
+  z-index: 1000;
+  justify-content: center;
+  align-items: center;
+  font-family: "Delius Swash Caps", cursive;
+}
+
+/* .form-container {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  margin: auto;
+  min-width: 300px;
+} */
+
+.project {
+    display: block;
+    border: 1px solid blue;
+}
+
+.popup-form button {
+    padding: 5px;
+    border-radius: 5px;
+    font: inherit;
+    font-size: 15px;
+    color: inherit;
+}
+
+.popup-form input,
+.popup-form textarea {
+  font-family: "Delius Swash Caps", cursive !important;
+  color: inherit;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.3);
+  cursor: pointer;
+}
+
+.single-project {
+    border: 1px solid rgb(133, 191, 206);
+    background-color: rgb(10, 115, 141);
+    color: rgb(239, 247, 255);
+    margin: 8px 0;
+    padding: 8px 10px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(61,117,131,0.12), 0 1.5px 0 #b2ebf2 inset;
+    cursor: grab;
+    transition: box-shadow 0.2s, transform 0.1s;
+    font-weight: 500;
+    user-select: none;
+    position: relative;
+    position: relative;
+}
+
+.single-project:active {
+    box-shadow: 0 2px 4px rgba(61,117,131,0.16) inset;
+    transform: translateY(2px) scale(0.98);
+    cursor: grabbing;
+}
+
+.single-project:hover:not(:has(:hover)){
+    box-shadow: 0 6px 18px rgba(61,117,131,0.19), 0 2px 0 #b2ebf2 inset;
+    background-color: rgb(19, 149, 182);
+}
+
+.single-item {
+    display: grid;
+    grid-template-columns: 1fr 4fr 1fr 1fr;
+    border: 1px solid rgb(170, 142, 105);
+    background-color: rgb(253, 255, 224);
+    color: rgb(63, 63, 63);
+    margin: 8px 0;
+    padding: 12px 16px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(61,117,131,0.12), 0 1.5px 0 #b2ebf2 inset;
+    cursor: grab;
+    transition: box-shadow 0.2s, transform 0.1s;
+    font-weight: 500;
+    user-select: none;
+    position: relative;
+    max-height: 35px;
+    position: relative;
+}
+
+/* .single-item:active:not(:has(:active)) {
+    box-shadow: 0 2px 4px rgba(61,117,131,0.16) inset;
+    transform: translateY(2px) scale(0.98);
+    cursor: grabbing;
+} */
+
+.single-item:hover {
+    box-shadow: 0 6px 18px rgba(61,117,131,0.19), 0 2px 0 #ffee8e inset;
+    background-color: #faf6c5;
+}
+.proj-date {
+    font-size: 12px;
+    margin: 3px;
+}
+.proj-name {
+    font-size: 18px;
+    margin: 3px;
+}
+
+.button-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    gap: 50px;
+}
+
+.edit-project {
+    background-image: url(./asset/file-edit-outline.svg);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 1rem;
+    background-color: inherit;
+    filter: invert(1) brightness(2);
+    border: none;
+    opacity: 0.7;
+    cursor: pointer; 
+    transition: opacity 0.2s ease;
+}
+
+.delete-project {
+    background-image: url(./asset/trash-can-outline.svg);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 1rem;
+    background-color: inherit;
+    filter: invert(1) brightness(8);
+    border: none;
+    opacity: 0.7;
+    cursor: pointer; 
+    transition: opacity 0.2s ease;
+}
+
+
+button:hover {
+    transform: translateY(-2px) scale(1.2);
+    opacity: 1;
+}
+.icon-project {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    margin: 1rem;
+    display: flex;
+    flex-direction: row;
+    gap: 2rem;
+}
+
+.edit-item {
+    background-image: url(./asset/file-edit-outline.svg);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 1rem;
+    background-color: #ffffff;
+    border: none;
+    opacity: 0.7;
+    cursor: pointer; 
+    transition: opacity 0.2s ease;
+}
+
+.delete-item {
+    background-image: url(./asset/trash-can-outline.svg);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 1rem;
+    background-color: #ffffff;
+    border: none;
+    opacity: 0.7;
+    cursor: pointer; 
+    transition: opacity 0.2s ease;
+}
+
+.icon-item {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+input[type="checkbox"] {
+  cursor: pointer;
+  transform: scale(1.5);
+  margin-left: 20px;
+}
+
+input[type="checkbox"]:hover {
+    background-color: #e1f5fe;
+    transform: translateY(-2px) scale(1.8);
+    opacity: 1;
+}
+.done {
+    text-decoration: line-through;
+    opacity: 0.6;
+    background-color: rgb(145, 252, 145);
+}
+
+.single-project.dragging,
+.single-item.dragging {
+    opacity: 0.5;
+    border: 2px dashed #007bff; /* Optional visual effect */
+    cursor: grabbing;
+}
+
+.single-project,
+.single-item {
+    cursor: grab;
+    user-select: none;
+}
