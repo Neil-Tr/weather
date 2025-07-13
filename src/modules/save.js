@@ -1,3 +1,3 @@
-export default function saveLocal(prjArray) {
-    localStorage.setItem('projects', JSON.stringify(prjArray));
+export default function saveLocal(locationArray) {
+  localStorage.setItem("locations", JSON.stringify(locationArray));
 }

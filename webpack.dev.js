@@ -1,4 +1,3 @@
-// webpack.config.js
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 
@@ -12,11 +11,7 @@ module.exports = {
   },
   devtool: "eval-source-map",
   devServer: {
-      watchFiles: [
-    './src/**/*.js',
-    './src/**/*.css',
-    './src/**/*.html'
-  ]
+    watchFiles: ["./src/**/*.js", "./src/**/*.css", "./src/**/*.html"],
   },
   plugins: [
     new HtmlWebpackPlugin({
@@ -25,6 +20,10 @@ module.exports = {
   ],
   module: {
     rules: [
+      {
+        test: /\.js$/,
+        type: "javascript/auto",
+      },
       {
         test: /\.css$/i,
         use: ["style-loader", "css-loader"],
