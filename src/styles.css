@@ -49,7 +49,7 @@ button:hover {
 
 .cities {
   width: 800px;
-  height: 420px;
+  height: 425px;
   border: 1px solid gray;
   border-radius: 10px;
   display: grid;
@@ -141,7 +141,7 @@ input::placeholder {
 
 .mainIcon {
   width: 70px;
-  height: 70px;
+  height: 65px;
 }
 
 .sideInfo {
