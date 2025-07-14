@@ -4,6 +4,12 @@
 body {
   height: 100vh;
   font-family: Roboto;
+  background: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)),
+    url("./asset/background.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
 }
 header {
   display: flex;
@@ -14,7 +20,10 @@ header {
   align-items: center;
 }
 header > button {
-  height: 18px;
+  height: 20px;
+  border-radius: 10px;
+  background-color: rgba(0, 0, 255, 0.438);
+  color: white;
 }
 
 .container {
@@ -33,7 +42,10 @@ header > button {
   display: grid;
   grid-template-columns: 1fr;
   grid-template-rows: 1fr 5fr 3fr;
-  background-color: rgb(54, 138, 235);
+  background-color: rgba(1, 39, 143, 0.5);
+  backdrop-filter: blur(10px);
+  box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.1);
+  text-shadow: 3px 3px 8px rgba(0, 0, 0, 0.4);
 }
 
 .searchBox {
@@ -43,6 +55,16 @@ header > button {
   justify-content: space-around;
   gap: 10px;
   margin-top: 5px;
+}
+
+input {
+  background-color: inherit;
+  color: rgb(224, 224, 224);
+  border-radius: 20px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+}
+input::placeholder {
+  color: rgb(247, 247, 247);
 }
 .location {
   width: 250px;
@@ -61,18 +83,59 @@ header > button {
 
 .mainInfo {
   grid-area: 1/1/6/2;
-  border: 1px solid rgb(233, 231, 231);
-  border-radius: 5px;
+  border: 1px solid rgb(233, 231, 231, 0.3);
+  border-radius: 10px;
+  color: white;
+  padding-left: 30px;
+}
+
+.mainInfo :hover {
+  transform: scale(1.05);
+}
+
+.mainInfo h1,
+.mainInfo h3,
+.mainInfo h5 {
+  margin: 8px 0;
+}
+.mainInfo > h1 {
+  font-size: 40px;
+}
+.mainInfo > h3 {
+  font-size: 26px;
+  font-weight: 400;
+  line-height: 1.1;
+}
+.mainInfo > h5 {
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.1;
+}
+.tempIcon {
+  display: flex;
+  flex-direction: row;
+  gap: 60px;
+  align-items: center;
+}
+
+.mainIcon {
+  width: 60px;
+  height: 60px;
 }
 
 .sideInfo {
   display: grid;
-  grid-template-columns: 1fr 5fr 1fr;
+  grid-template-columns: 1fr 5fr 2fr;
   gap: 10px;
   align-items: center;
   color: white;
-  border: 1px solid rgb(233, 231, 231);
-  border-radius: 5px;
+  border: 1px solid rgb(233, 231, 231, 0.3);
+  border-radius: 10px;
+  padding-left: 20px;
+}
+
+.sideInfo:hover {
+  transform: scale(1.05);
 }
 .sideInfo > p {
   font-size: 14px;
@@ -88,9 +151,34 @@ header > button {
 .nextDay {
   width: 120px;
   height: 100px;
-  border: 1px solid rgb(233, 231, 231);
-  border-radius: 5px;
+  border: 1px solid rgb(233, 231, 231, 0.3);
+  border-radius: 10px;
   gap: 10px;
+  display: wrap;
+  font-weight: 400;
+  text-align: center;
+  color: white;
+}
+.nextDay:hover {
+  transform: scale(1.05);
+}
+.nextDay > h4 {
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 1.1;
+  margin: 8px 0;
+}
+
+.nextDay > p {
+  font-size: 13px;
+  line-height: 1.1;
+  margin: 2px 0;
+}
+
+.nextDayIcon {
+  width: 30px;
+  height: 30px;
+  margin: 4px auto;
 }
 
 .icon {
