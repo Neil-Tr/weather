@@ -24,8 +24,10 @@ function loadLocal() {
 }
 async function getData(location, unit) {
   const apiKey = "WZP6HZRJFZD66FKTJHN88MESZ";
+  const encodedLocation = encodeURIComponent(location);
+
   const response = await fetch(
-    `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${location}?unitGroup=${unit}&include=days%2Chours%2Calerts%2Ccurrent&key=${apiKey}&contentType=json`
+    `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${encodedLocation}?unitGroup=${unit}&include=days%2Chours%2Calerts%2Ccurrent&key=${apiKey}&contentType=json`
   );
   const locationData = await response.json();
   locationData.degree = unit === "metric" ? "&#176" : "&#176F";
@@ -226,8 +228,10 @@ function renderTemplate() {
 function saveSelection() {
   const unit =
     document.querySelector(".toggleCf").textContent === "°C" ? "metric" : "us";
-  const locationElements = document.querySelectorAll(".mainInfo h5");
-  const locations = Array.from(locationElements).map((el) => el.textContent);
+  const locationElements = document.querySelectorAll(".mainInfo h4");
+  const locations = Array.from(locationElements).map((el) =>
+    el.textContent.trim()
+  );
   const selections = {
     unit: unit,
     locations: locations,
