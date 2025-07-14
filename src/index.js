@@ -106,6 +106,24 @@ function renderIcon(iconName, altText = "") {
 //render data, input: location
 function renderLocation(container, data) {
   const mainInfo = container.querySelector(".mainInfo");
+  if (data.isPlaceholder) {
+    mainInfo.innerHTML = `
+      <h1>No Data</h1>
+      <div class="tempIcon"><h1>--</h1></div>
+      <h5> No location selected </h5>
+      <h4>---</h4>
+    `;
+    container.classList.remove("night");
+    container.querySelector(".feelsLike").innerHTML = `--`;
+    container.querySelector(".humidity").innerHTML = `--`;
+    container.querySelector(".precipprob").innerHTML = `--`;
+    container.querySelector(".windSpeed").innerHTML = `--`;
+    container.querySelector(".gust").innerHTML = `--`;
+    container.querySelector(".nextDays").innerHTML = `
+      <p style="text-align:center; color:#888;">No forecast</p>
+    `;
+    return;
+  }
   mainInfo.innerHTML = `
   <h1>${data.dayOfWeek} | ${data.currentTime}</h1>
   <div class=tempIcon><h1>${data.temp}${data.degree}</h1>
@@ -207,6 +225,7 @@ function renderTemplate() {
         .then(async (data) => {
           const processed = await processData(data);
           renderLocation(cityBox, processed);
+          searchInput.value = "";
         })
         .catch((err) => {
           console.error("Error fetching location data:", err);
@@ -226,30 +245,69 @@ function renderTemplate() {
 }
 //save selection with 4 locations to local storage
 function saveSelection() {
-  const unit =
-    document.querySelector(".toggleCf").textContent === "°C" ? "metric" : "us";
-  const locationElements = document.querySelectorAll(".mainInfo h4");
-  const locations = Array.from(locationElements).map((el) =>
-    el.textContent.trim()
-  );
-  const selections = {
-    unit: unit,
-    locations: locations,
-  };
-  localStorage.setItem("selections", JSON.stringify(selections));
+  try {
+    const unit =
+      document.querySelector(".toggleCf").textContent === "°C"
+        ? "metric"
+        : "us";
+    const locationElements = document.querySelectorAll(".mainInfo h4");
+    const locations = Array.from(locationElements).map((el) =>
+      el.textContent.trim()
+    );
+    const selections = {
+      unit: unit,
+      locations: locations,
+    };
+    localStorage.setItem("selections", JSON.stringify(selections));
+    showMessage("Selections saved successfully!", "success");
+  } catch (err) {
+    console.error("Error saving selections:", err);
+    showMessage("Failed to save selections.", "error");
+  }
 }
+function showMessage(message, type = "success") {
+  const msg = document.createElement("div");
+  msg.className = `save-message ${type}`;
+  msg.textContent = message;
+
+  msg.style.position = "fixed";
+  msg.style.bottom = "20px";
+  msg.style.right = "20px";
+  msg.style.padding = "10px 15px";
+  msg.style.borderRadius = "5px";
+  msg.style.color = "#fff";
+  msg.style.fontWeight = "bold";
+  msg.style.zIndex = "1000";
+  msg.style.backgroundColor = type === "success" ? "green" : "red";
+
+  document.body.appendChild(msg);
+
+  setTimeout(() => {
+    msg.remove();
+  }, 2000);
+}
+
 function pageRender(selection) {
   const container = document.querySelector(".container");
   container.innerHTML = "";
-  selection.locations.forEach(async (city) => {
+  const locationsToShow = [...selection.locations];
+  while (locationsToShow.length < 4) {
+    locationsToShow.push(null);
+  }
+  locationsToShow.forEach(async (city) => {
     const cityBox = renderTemplate();
-    try {
-      const data = await getData(city, selection.unit);
-      const processed = await processData(data);
-      renderLocation(cityBox, processed);
-      console.log(processed);
-    } catch (err) {
-      console.error(`Failed to load data for ${city}:`, err);
+    if (city) {
+      try {
+        const data = await getData(city, selection.unit);
+        const processed = await processData(data);
+        renderLocation(cityBox, processed);
+        console.log(processed);
+      } catch (err) {
+        console.error(`Failed to load data for ${city}:`, err);
+        renderLocation(cityBox, { isPlaceholder: true });
+      }
+    } else {
+      renderLocation(cityBox, { isPlaceholder: true });
     }
   });
 }
