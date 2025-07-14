@@ -2,7 +2,7 @@ export default function loadLocal() {
   const raw = localStorage.getItem("selections");
   if (!raw)
     return {
-      locations: ["Macquarie Fields", "Dallas", "Ho Chi Minh", "Pleiku"],
+      locations: ["Sydney", "London", "New York", "Tokyo"],
       unit: "metric",
     };
 

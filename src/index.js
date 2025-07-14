@@ -1,6 +1,5 @@
 import "./styles.css";
 import loadLocal from "./modules/load";
-import saveLocal from "./modules/save";
 import magnifyIcon from "./asset/magnify.svg";
 import thermometerIcon from "./asset/thermometer-lines.svg";
 import waterIcon from "./asset/water-percent.svg";
@@ -96,9 +95,21 @@ function renderLocation(container, data) {
   <div class="mainIcon">${renderIcon(data.icon, data.conditions)}
   </div>
   </div>
-    <h3> ${data.conditions}</h3>
-    <h5>${data.location} </h5>
+    <h5> ${data.conditions}</h5>
+    <h4>${data.location} </h4>
     `;
+
+  let hour = 12;
+  if (data.currentTime && typeof data.currentTime === "string") {
+    const parts = data.currentTime.split(":");
+    hour = parseInt(parts[0]);
+  }
+  if (hour >= 18 || hour < 6) {
+    container.classList.add("night");
+  } else {
+    container.classList.remove("night");
+  }
+
   container.querySelector(
     ".feelsLike"
   ).innerHTML = `${data.feelslike}${data.degree}`;
@@ -109,6 +120,7 @@ function renderLocation(container, data) {
   ).innerHTML = `${data.windspeed} ${data.speed}`;
   container.querySelector(".gust").innerHTML = `${data.windgust} ${data.speed}`;
   const nextDays = container.querySelector(".nextDays");
+  nextDays.innerHTML = "";
   for (let i = 0; i <= 4; i++) {
     const nextDay = document.createElement("div");
     nextDay.className = "nextDay";
@@ -168,6 +180,31 @@ function renderTemplate() {
   </div>
 `;
   container.appendChild(cityBox);
+  const searchButton = cityBox.querySelector(".searchButton");
+  const searchInput = cityBox.querySelector(".location");
+
+  searchButton.addEventListener("click", () => {
+    const location = searchInput.value.trim();
+    if (location) {
+      getData(location, selection.unit)
+        .then(async (data) => {
+          const processed = await processData(data);
+          renderLocation(cityBox, processed);
+        })
+        .catch((err) => {
+          console.error("Error fetching location data:", err);
+          cityBox.querySelector(
+            ".mainInfo"
+          ).innerHTML = `<p style="color: red;">Location not found</p>`;
+        });
+    }
+  });
+  searchInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      searchButton.click();
+    }
+  });
+
   return cityBox;
 }
 //save selection with 4 locations to local storage
@@ -182,21 +219,6 @@ function saveSelection() {
   };
   localStorage.setItem("selections", JSON.stringify(selections));
 }
-const saveButton = document.querySelector(".saveSelection");
-saveButton.addEventListener("click", saveSelection);
-
-const selection = loadLocal();
-
-const buttonCf = document.querySelector(".toggleCf");
-buttonCf.textContent = selection.unit === "metric" ? "°C" : "°F";
-buttonCf.addEventListener("click", () => {
-  selection.unit = selection.unit === "metric" ? "us" : "metric";
-  // Update button label
-  buttonCf.textContent = selection.unit === "metric" ? "°C" : "°F";
-  pageRender(selection);
-});
-
-pageRender(selection);
 function pageRender(selection) {
   const container = document.querySelector(".container");
   container.innerHTML = "";
@@ -212,3 +234,14 @@ function pageRender(selection) {
     }
   });
 }
+const saveButton = document.querySelector(".saveSelection");
+saveButton.addEventListener("click", saveSelection);
+const selection = loadLocal();
+pageRender(selection);
+const buttonCf = document.querySelector(".toggleCf");
+buttonCf.textContent = selection.unit === "metric" ? "°C" : "°F";
+buttonCf.addEventListener("click", () => {
+  selection.unit = selection.unit === "metric" ? "us" : "metric";
+  buttonCf.textContent = selection.unit === "metric" ? "°C" : "°F";
+  pageRender(selection);
+});
