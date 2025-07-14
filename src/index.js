@@ -1,5 +1,4 @@
 import "./styles.css";
-import loadLocal from "./modules/load";
 import magnifyIcon from "./asset/magnify.svg";
 import thermometerIcon from "./asset/thermometer-lines.svg";
 import waterIcon from "./asset/water-percent.svg";
@@ -7,6 +6,22 @@ import pouringIcon from "./asset/weather-pouring.svg";
 import windyIcon from "./asset/weather-windy.svg";
 import dustIcon from "./asset/weather-dust.svg";
 
+function loadLocal() {
+  const raw = localStorage.getItem("selections");
+  if (!raw)
+    return {
+      locations: ["Sydney", "London", "New York", "Tokyo"],
+      unit: "metric",
+    };
+
+  try {
+    const parsed = JSON.parse(raw);
+    return parsed;
+  } catch (err) {
+    console.error("Error loading from local storage", err);
+    return [];
+  }
+}
 async function getData(location, unit) {
   const apiKey = "WZP6HZRJFZD66FKTJHN88MESZ";
   const response = await fetch(
