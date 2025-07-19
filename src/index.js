@@ -10,7 +10,7 @@ function loadLocal() {
   const raw = localStorage.getItem("selections");
   if (!raw)
     return {
-      locations: ["Sydney", "London", "New York", "Tokyo"],
+      locations: ["Sydney", "Ho Chi Minh", "Pleiku", "Dallas"],
       unit: "metric",
     };
 
