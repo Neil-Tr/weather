@@ -317,6 +317,7 @@ function showMessage(message, type = "success") {
 async function pageRender(selection) {
   const container = document.querySelector(".container");
   container.innerHTML = "";
+  showLoader();
   const locationsToShow = [...selection.locations];
   while (locationsToShow.length < 4) {
     locationsToShow.push(null);
@@ -324,23 +325,27 @@ async function pageRender(selection) {
   const cityBoxes = locationsToShow.map(() => renderTemplate());
   cityBoxes.forEach((box) => container.appendChild(box));
   // Fetch all data in parallel
-  await Promise.all(
-    locationsToShow.map(async (city, index) => {
-      const cityBox = cityBoxes[index];
-      if (city) {
-        try {
-          const data = await getData(city, selection.unit);
-          const processed = await processData(data);
-          renderLocation(cityBox, processed);
-        } catch (err) {
-          console.error(`Failed to load data for ${city}:`, err);
+  try {
+    await Promise.all(
+      locationsToShow.map(async (city, index) => {
+        const cityBox = cityBoxes[index];
+        if (city) {
+          try {
+            const data = await getData(city, selection.unit);
+            const processed = await processData(data);
+            renderLocation(cityBox, processed);
+          } catch (err) {
+            console.error(`Failed to load data for ${city}:`, err);
+            renderLocation(cityBox, { isPlaceholder: true });
+          }
+        } else {
           renderLocation(cityBox, { isPlaceholder: true });
         }
-      } else {
-        renderLocation(cityBox, { isPlaceholder: true });
-      }
-    })
-  );
+      })
+    );
+  } finally {
+    hideLoader();
+  }
 }
 const saveButton = document.querySelector(".saveSelection");
 saveButton.addEventListener("click", saveSelection);
@@ -353,3 +358,11 @@ buttonCf.addEventListener("click", () => {
   buttonCf.textContent = selection.unit === "metric" ? "°C" : "°F";
   pageRender(selection);
 });
+
+function showLoader() {
+  document.getElementById("loading-overlay").style.display = "flex";
+}
+
+function hideLoader() {
+  document.getElementById("loading-overlay").style.display = "none";
+}
