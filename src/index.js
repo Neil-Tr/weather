@@ -23,6 +23,8 @@ function loadLocal() {
   }
 }
 async function getData(location, unit) {
+  const cached = getCachedWeather(location, unit);
+  if (cached) return cached;
   const apiKey = "WZP6HZRJFZD66FKTJHN88MESZ";
   const encodedLocation = encodeURIComponent(location);
 
@@ -33,30 +35,61 @@ async function getData(location, unit) {
   locationData.degree = unit === "metric" ? "&#176" : "&#176F";
   locationData.speed = unit === "metric" ? "kmh" : "mph";
   console.log(locationData);
+  setCachedWeather(location, unit, locationData);
   return locationData;
 }
-async function updateTime(container, timezone) {
-  try {
-    const timeRes = await fetch(
-      `https://timeapi.io/api/Time/current/zone?timeZone=${encodeURIComponent(
-        timezone
-      )}`
-    );
-    if (timeRes.ok) {
-      const timeData = await timeRes.json();
-      const mainInfo = container.querySelector(".mainInfo");
-      const timeH1 = mainInfo.querySelector("h1");
-
-      // Extract current temperature and keep it
-      const tempText = mainInfo.querySelector(".tempIcon h1").textContent;
-
-      // Update only time in <h1>
-      timeH1.innerHTML = `${timeData.dayOfWeek} | ${timeData.time} <div class="tempIcon"><h1>${tempText}</h1></div>`;
-    } else {
-      console.error("Failed to update time:", timeRes.status);
+//set and get cached data, 30 min expiry
+function getCachedWeather(location, unit) {
+  const cacheKey = `weather-${location}-${unit}`;
+  const cacheRaw = localStorage.getItem(cacheKey);
+  if (cacheRaw) {
+    const cache = JSON.parse(cacheRaw);
+    const now = Date.now();
+    if (now - cache.timestamp < 30 * 60 * 1000) {
+      // 30 minutes
+      console.log(`Using cached data for ${location}`);
+      return cache.data;
     }
+  }
+  return null;
+}
+
+function setCachedWeather(location, unit, data) {
+  const cacheKey = `weather-${location}-${unit}`;
+  localStorage.setItem(
+    cacheKey,
+    JSON.stringify({
+      timestamp: Date.now(),
+      data: data,
+    })
+  );
+}
+
+//get time from local time and timezone, instead of calling time api
+function getTimeInTimezone(timezone) {
+  try {
+    const now = new Date();
+    const formatter = new Intl.DateTimeFormat("en-US", {
+      timeZone: timezone,
+      weekday: "short",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    });
+    const parts = formatter.formatToParts(now);
+
+    const dayOfWeek = parts.find((p) => p.type === "weekday")?.value || "N/A";
+    const time = parts
+      .filter(
+        (p) => p.type === "hour" || p.type === "minute" || p.type === "literal"
+      )
+      .map((p) => p.value)
+      .join("");
+
+    return { dayOfWeek, time };
   } catch (err) {
-    console.error("Error fetching updated time:", err);
+    console.error("Invalid timezone:", timezone, err);
+    return { dayOfWeek: "N/A", time: "N/A" };
   }
 }
 
@@ -97,28 +130,28 @@ async function processData(data) {
       (value) => (processed.forecast[i][value] = data.days[i][value])
     );
   }
-  try {
-    if (processed.timezone !== "N/A") {
-      const timeRes = await fetch(
-        `https://timeapi.io/api/Time/current/zone?timeZone=${encodeURIComponent(
-          processed.timezone
-        )}`
-      );
-      if (timeRes.ok) {
-        const timeData = await timeRes.json();
-        processed.currentTime = timeData.time || "Unavailable";
-        processed.dayOfWeek = timeData.dayOfWeek || "Unavailable";
-      } else {
-        console.error("Time API error:", timeRes.status);
-        processed.currentTime = "Unavailable";
-      }
-    } else {
-      processed.currentTime = "Unavailable";
-    }
-  } catch (err) {
-    console.error("Failed to fetch current time:", err);
-    processed.currentTime = "Unavailable";
-  }
+  // try {
+  //   if (processed.timezone !== "N/A") {
+  //     const timeRes = await fetch(
+  //       `https://timeapi.io/api/Time/current/zone?timeZone=${encodeURIComponent(
+  //         processed.timezone
+  //       )}`
+  //     );
+  //     if (timeRes.ok) {
+  //       const timeData = await timeRes.json();
+  //       processed.currentTime = timeData.time || "Unavailable";
+  //       processed.dayOfWeek = timeData.dayOfWeek || "Unavailable";
+  //     } else {
+  //       console.error("Time API error:", timeRes.status);
+  //       processed.currentTime = "Unavailable";
+  //     }
+  //   } else {
+  //     processed.currentTime = "Unavailable";
+  //   }
+  // } catch (err) {
+  //   console.error("Failed to fetch current time:", err);
+  //   processed.currentTime = "Unavailable";
+  // }
 
   return processed;
 }
@@ -148,8 +181,9 @@ function renderLocation(container, data) {
     `;
     return;
   }
+  const { dayOfWeek, time } = getTimeInTimezone(data.timezone);
   mainInfo.innerHTML = `
-  <h1>${data.dayOfWeek} | ${data.currentTime}</h1>
+  <h1>${dayOfWeek} | ${time}</h1>
   <div class=tempIcon><h1>${data.temp}${data.degree}</h1>
   <div class="mainIcon">${renderIcon(data.icon, data.conditions)}
   </div>
@@ -159,8 +193,8 @@ function renderLocation(container, data) {
     `;
 
   let hour = 12;
-  if (data.currentTime && typeof data.currentTime === "string") {
-    const parts = data.currentTime.split(":");
+  if (time && typeof time === "string") {
+    const parts = time.split(":");
     hour = parseInt(parts[0]);
   }
   if (hour >= 18 || hour < 6) {
@@ -197,7 +231,8 @@ function renderLocation(container, data) {
   }
   if (container.refreshTimer) clearInterval(container.refreshTimer);
   container.refreshTimer = setInterval(() => {
-    updateTime(container, data.timezone);
+    const { dayOfWeek, time } = getTimeInTimezone(data.timezone);
+    mainInfo.querySelector("h1").innerHTML = `${dayOfWeek} | ${time}`;
   }, 60000);
 }
 
