@@ -35,6 +35,30 @@ async function getData(location, unit) {
   console.log(locationData);
   return locationData;
 }
+async function updateTime(container, timezone) {
+  try {
+    const timeRes = await fetch(
+      `https://timeapi.io/api/Time/current/zone?timeZone=${encodeURIComponent(
+        timezone
+      )}`
+    );
+    if (timeRes.ok) {
+      const timeData = await timeRes.json();
+      const mainInfo = container.querySelector(".mainInfo");
+      const timeH1 = mainInfo.querySelector("h1");
+
+      // Extract current temperature and keep it
+      const tempText = mainInfo.querySelector(".tempIcon h1").textContent;
+
+      // Update only time in <h1>
+      timeH1.innerHTML = `${timeData.dayOfWeek} | ${timeData.time} <div class="tempIcon"><h1>${tempText}</h1></div>`;
+    } else {
+      console.error("Failed to update time:", timeRes.status);
+    }
+  } catch (err) {
+    console.error("Error fetching updated time:", err);
+  }
+}
 
 async function processData(data) {
   if (!data) {
@@ -171,6 +195,10 @@ function renderLocation(container, data) {
     `;
     nextDays.appendChild(nextDay);
   }
+  if (container.refreshTimer) clearInterval(container.refreshTimer);
+  container.refreshTimer = setInterval(() => {
+    updateTime(container, data.timezone);
+  }, 60000);
 }
 
 function renderTemplate() {
@@ -214,7 +242,6 @@ function renderTemplate() {
   <div class="nextDays">
   </div>
 `;
-  container.appendChild(cityBox);
   const searchButton = cityBox.querySelector(".searchButton");
   const searchInput = cityBox.querySelector(".location");
 
@@ -287,29 +314,38 @@ function showMessage(message, type = "success") {
   }, 2000);
 }
 
-function pageRender(selection) {
+async function pageRender(selection) {
   const container = document.querySelector(".container");
   container.innerHTML = "";
+  showLoader();
   const locationsToShow = [...selection.locations];
   while (locationsToShow.length < 4) {
     locationsToShow.push(null);
   }
-  locationsToShow.forEach(async (city) => {
-    const cityBox = renderTemplate();
-    if (city) {
-      try {
-        const data = await getData(city, selection.unit);
-        const processed = await processData(data);
-        renderLocation(cityBox, processed);
-        console.log(processed);
-      } catch (err) {
-        console.error(`Failed to load data for ${city}:`, err);
-        renderLocation(cityBox, { isPlaceholder: true });
-      }
-    } else {
-      renderLocation(cityBox, { isPlaceholder: true });
-    }
-  });
+  const cityBoxes = locationsToShow.map(() => renderTemplate());
+  cityBoxes.forEach((box) => container.appendChild(box));
+  // Fetch all data in parallel
+  try {
+    await Promise.all(
+      locationsToShow.map(async (city, index) => {
+        const cityBox = cityBoxes[index];
+        if (city) {
+          try {
+            const data = await getData(city, selection.unit);
+            const processed = await processData(data);
+            renderLocation(cityBox, processed);
+          } catch (err) {
+            console.error(`Failed to load data for ${city}:`, err);
+            renderLocation(cityBox, { isPlaceholder: true });
+          }
+        } else {
+          renderLocation(cityBox, { isPlaceholder: true });
+        }
+      })
+    );
+  } finally {
+    hideLoader();
+  }
 }
 const saveButton = document.querySelector(".saveSelection");
 saveButton.addEventListener("click", saveSelection);
@@ -322,3 +358,11 @@ buttonCf.addEventListener("click", () => {
   buttonCf.textContent = selection.unit === "metric" ? "°C" : "°F";
   pageRender(selection);
 });
+
+function showLoader() {
+  document.getElementById("loading-overlay").style.display = "flex";
+}
+
+function hideLoader() {
+  document.getElementById("loading-overlay").style.display = "none";
+}
